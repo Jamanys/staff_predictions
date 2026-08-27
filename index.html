@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pronostic Top 14</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pitch-dark:#0f3d2e;
+    --pitch:#1b5e42;
+    --pitch-light:#2f7d56;
+    --line:#f4f1e8;
+    --gold:#c9a04a;
+    --ink:#0d2318;
+    --card-bg:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:
+      repeating-linear-gradient(90deg, var(--pitch) 0 80px, var(--pitch-light) 80px 160px);
+    min-height:100vh;
+    color:var(--ink);
+    padding-bottom:60px;
+  }
+  header{
+    text-align:center;
+    padding:48px 20px 32px;
+    color:var(--line);
+  }
+  header .eyebrow{
+    font-family:'Oswald',sans-serif;
+    letter-spacing:3px;
+    font-size:13px;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:8px;
+  }
+  header h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:clamp(32px,6vw,52px);
+    margin:0 0 10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+  header p{
+    font-size:15px;
+    color:#dfe8e2;
+    max-width:480px;
+    margin:0 auto;
+  }
+  .card{
+    max-width:520px;
+    margin:0 auto;
+    background:var(--card-bg);
+    border-radius:16px;
+    padding:28px 24px 32px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  }
+  label{
+    display:block;
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    color:var(--pitch-dark);
+    margin-bottom:8px;
+  }
+  #nom{
+    width:100%;
+    padding:12px 14px;
+    border:2px solid #e2e2e2;
+    border-radius:10px;
+    font-size:16px;
+    font-family:'Inter',sans-serif;
+    margin-bottom:26px;
+    transition:border-color .15s;
+  }
+  #nom:focus{
+    outline:none;
+    border-color:var(--pitch);
+  }
+  #ranking-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+  #ranking-list li{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#fafaf8;
+    border:1px solid #ececec;
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:8px;
+    cursor:grab;
+    user-select:none;
+    transition:box-shadow .15s, transform .15s;
+  }
+  #ranking-list li.sortable-chosen{
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    transform:scale(1.02);
+    background:#fff;
+  }
+  #ranking-list li.sortable-ghost{
+    opacity:0.35;
+  }
+  .rank-num{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--gold);
+    width:28px;
+    text-align:center;
+    flex-shrink:0;
+  }
+  .team-name{
+    flex:1;
+    font-weight:600;
+    font-size:16px;
+    color:var(--ink);
+  }
+  .handle{
+    color:#bbb;
+    font-size:18px;
+    letter-spacing:2px;
+    flex-shrink:0;
+  }
+  #submit-btn{
+    width:100%;
+    margin-top:24px;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:var(--pitch-dark);
+    color:#fff;
+    font-family:'Oswald',sans-serif;
+    font-size:16px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .15s, opacity .15s;
+  }
+  #submit-btn:hover{background:var(--pitch);}
+  #submit-btn:disabled{opacity:0.6;cursor:not-allowed;}
+  #status-msg{
+    text-align:center;
+    margin-top:16px;
+    font-size:14px;
+    font-weight:500;
+    min-height:20px;
+  }
+  #status-msg.ok{color:#1b5e42;}
+  #status-msg.err{color:#b3261e;}
+  .confirm{
+    display:none;
+    text-align:center;
+    color:var(--line);
+    margin-top:24px;
+  }
+  .confirm.show{display:block;}
+  .confirm h2{
+    font-family:'Oswald',sans-serif;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Jeu interne</div>
+  <h1>Pronostic Top 14</h1>
+  <p>Classe les 14 équipes de la 1ère à la dernière place de la saison. Glisse les cartes pour réordonner, puis valide ton pronostic.</p>
+</header>
+
+<div class="card">
+  <label for="nom">Ton nom</label>
+  <input type="text" id="nom" placeholder="Prénom Nom" autocomplete="off">
+
+  <label>Ton classement (de la 1ère à la 14ème place)</label>
+  <ul id="ranking-list"></ul>
+
+  <button id="submit-btn">Valider mon classement</button>
+  <div id="status-msg"></div>
+
+  <div class="confirm" id="confirm-box">
+    <h2>Classement enregistré !</h2>
+    <p>Merci, ton pronostic a bien été envoyé.</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+  // ⚠️ Remplace cette URL par celle de ton déploiement Google Apps Script (voir instructions)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxz_3lHbxoJF_QEWJTQoGAr269vkWY8ABm8buwD0fK5L9L2mcygt7pD2Ij5PxBDxI1fgg/exec";
+
+  const teams = [
+    "Toulouse","Montpellier","Stade Français","Pau","Racing 92",
+    "La Rochelle","Clermont","Bordeaux","Toulon","Castres",
+    "Lyon","Bayonne","Perpignan","Vannes"
+  ];
+
+  const list = document.getElementById('ranking-list');
+
+  function renderList(){
+    list.innerHTML = "";
+    teams.forEach((team) => {
+      const li = document.createElement('li');
+      li.dataset.team = team;
+      li.innerHTML = `<span class="rank-num"></span><span class="team-name">${team}</span><span class="handle">⠿</span>`;
+      list.appendChild(li);
+    });
+    updateRankNumbers();
+  }
+
+  function updateRankNumbers(){
+    [...list.children].forEach((li, i) => {
+      li.querySelector('.rank-num').textContent = i + 1;
+    });
+  }
+
+  renderList();
+
+  new Sortable(list, {
+    animation: 180,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onEnd: updateRankNumbers
+  });
+
+  const submitBtn = document.getElementById('submit-btn');
+  const statusMsg = document.getElementById('status-msg');
+  const confirmBox = document.getElementById('confirm-box');
+  const nomInput = document.getElementById('nom');
+
+  submitBtn.addEventListener('click', async () => {
+    const nom = nomInput.value.trim();
+    if (!nom){
+      statusMsg.textContent = "Merci d'indiquer ton nom avant de valider.";
+      statusMsg.className = "err";
+      nomInput.focus();
+      return;
+    }
+    if (SCRIPT_URL.includes("COLLE_ICI")){
+      statusMsg.textContent = "Le site n'est pas encore relié à Google Sheets (SCRIPT_URL à configurer).";
+      statusMsg.className = "err";
+      return;
+    }
+
+    const classement = [...list.children].map(li => li.dataset.team);
+
+    submitBtn.disabled = true;
+    statusMsg.textContent = "Envoi en cours...";
+    statusMsg.className = "";
+
+    try{
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ nom, classement })
+      });
+      statusMsg.textContent = "";
+      confirmBox.classList.add('show');
+      submitBtn.style.display = "none";
+      nomInput.disabled = true;
+    }catch(err){
+      statusMsg.textContent = "Erreur d'envoi, réessaie (vérifie ta connexion).";
+      statusMsg.className = "err";
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
